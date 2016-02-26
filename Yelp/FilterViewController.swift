@@ -8,9 +8,14 @@
 
 import UIKit
 
+@objc protocol FiltersViewControllerDelegate {
+    optional func filtersViewController(filtersViewController:FilterViewController, didUpdateFilters filters: [String:AnyObject])
+}
+
 class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
 
     @IBOutlet weak var tableView: UITableView!
+    weak var delegate: FiltersViewControllerDelegate?
     var categories: [[String:String]]!
     var switchStates = [Int:Bool]()
 
@@ -19,7 +24,6 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         categories = yelpCategories()
         tableView.dataSource = self
         tableView.delegate = self
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -33,6 +37,26 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
 
     @IBAction func onSearchButton(sender: AnyObject) {
             dismissViewControllerAnimated(true, completion:nil)
+        // Prepare dictionary
+        var filters = [String : AnyObject]()
+        // Prepare an array of string
+        var selectedCategories = [String]()
+        // Iterate through switchState in each cell and find which row is on
+        for (row,isSelected) in switchStates {
+            if isSelected {
+                // If the switch is on, then append the category code from categories array
+                selectedCategories.append(categories[row]["code"]!)
+            }
+        }
+        if selectedCategories.count > 0 {
+            // Assign the array of string that contains the selected category codes
+            // to filters with "categories" key
+            filters["categories"] = selectedCategories
+        }
+        
+        // Call delegate method on delegate object with filters as an argument
+        // filters contains the selected category codes 
+        delegate?.filtersViewController?(self, didUpdateFilters: filters)
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -44,12 +68,6 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         cell.switchLabel.text = categories[indexPath.row]["name"]
         cell.delegate = self
         
-        if switchStates[indexPath.row] != nil {
-            cell.onSwitch.on = switchStates[indexPath.row]!
-        } else {
-            cell.onSwitch.on = false
-        }
-        // This code does the same as above
         // If switchState[indexPath.row] exists, then assign it
         // If not exists, assign false as a default value
         cell.onSwitch.on = switchStates[indexPath.row] ?? false
