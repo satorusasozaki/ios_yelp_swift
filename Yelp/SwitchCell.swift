@@ -34,17 +34,17 @@ class SwitchCell: UITableViewCell {
     func switchValueChanged(){
         print("switchValue changed")
         
-        if delegate != nil {
-            // Explain the benefit of optional values
-            // if the delegate implements the switchCell method, then call it on the delegate. 
-            // Otherwise (if switchCell method is not implemented in the delegate) do nothing.
-            delegate!.switchCell?(self, didChangeValue: onSwitch.on)
-        }
+//        if delegate != nil {
+//            // Explain the benefit of optional values
+//            // if the delegate implements the switchCell method, then call it on the delegate. 
+//            // Otherwise (if switchCell method is not implemented in the delegate) do nothing.
+//            delegate!.switchCell?(self, didChangeValue: onSwitch.on)
+//        }
         
-//        // The same concept as above
-//        // if delegate is not nill and also switchCell method is implemented in the delegate object
-//        // then call it
-//        delegate?.switchCell?(self, didChangeValue: onSwitch.on)
+        // The same concept as above
+        // if delegate is not nill and also switchCell method is implemented in the delegate object
+        // then call it
+        delegate?.switchCell?(self, didChangeValue: onSwitch.on)
     }
 
 }

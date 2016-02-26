@@ -8,10 +8,11 @@
 
 import UIKit
 
-class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     var categories: [[String:String]]!
+    var switchStates = [Int:Bool]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +42,24 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
         cell.switchLabel.text = categories[indexPath.row]["name"]
+        cell.delegate = self
+        
+        if switchStates[indexPath.row] != nil {
+            cell.onSwitch.on = switchStates[indexPath.row]!
+        } else {
+            cell.onSwitch.on = false
+        }
+        // This code does the same as above
+        // If switchState[indexPath.row] exists, then assign it
+        // If not exists, assign false as a default value
+        cell.onSwitch.on = switchStates[indexPath.row] ?? false
+        
         return cell
+    }
+    
+    func switchCell(switchCell: SwitchCell, didChangeValue value: Bool) {
+        let indexPath = tableView.indexPathForCell(switchCell)!
+        switchStates[indexPath.row] = value
     }
     
     func yelpCategories() -> [[String:String]] {
